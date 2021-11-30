@@ -32,3 +32,10 @@ There are some helper scripts to quickly execute redundant tasks that are common
 
 - Execute from dX/ptY
 - This will compile the TS and execute the code automatically each time
+
+## Debugging in VS Code
+
+1. Navigate to the file you wish to debug and place breakpoints
+2. Open the Debug Panel in VS Code `Command + Shift + D`
+3. Click "JavaScript Debug Terminal"
+4. Execute `npm run start` (the debugger will automatically attach)
