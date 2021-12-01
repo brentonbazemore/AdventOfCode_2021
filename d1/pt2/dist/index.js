@@ -23,10 +23,14 @@ const fs = __importStar(require("fs"));
 const rawData = fs.readFileSync('input.txt', 'utf8');
 const data = rawData.split('\n');
 let total = 0;
-for (let i = 1; i < data.length; i++) {
+let prevSum = -Infinity;
+for (let i = 3; i < data.length; i++) {
+    const prevPrevNum = +data[i - 2];
     const prevNum = +data[i - 1];
     const curNum = +data[i];
-    total += +(curNum > prevNum);
+    const curSum = prevPrevNum + prevNum + curNum;
+    total += +(curSum > prevSum);
+    prevSum = curSum;
 }
 console.log(total);
 //# sourceMappingURL=index.js.map
