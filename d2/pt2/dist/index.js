@@ -28,11 +28,12 @@ const data = rawData.split('\n');
 let position = {
     horizontal: 0,
     depth: 0,
+    aim: 0,
 };
 const move = {
-    forward: (magnitude) => { position.horizontal += magnitude; },
-    down: (magnitude) => { position.depth += magnitude; },
-    up: (magnitude) => { position.depth -= magnitude; },
+    forward: (magnitude) => { position.horizontal += magnitude; position.depth += magnitude * position.aim; },
+    down: (magnitude) => { position.aim += magnitude; },
+    up: (magnitude) => { position.aim -= magnitude; },
 };
 data.forEach(rawMove => {
     const [action, magnitude] = rawMove.split(' ');

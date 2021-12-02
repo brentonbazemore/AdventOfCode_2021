@@ -10,12 +10,13 @@ const data: string[] = rawData.split('\n');
 let position = {
   horizontal: 0,
   depth: 0,
+  aim: 0,
 };
 
 const move = {
-  forward: (magnitude: number) => { position.horizontal += magnitude },
-  down: (magnitude: number) => { position.depth += magnitude },
-  up: (magnitude: number) => { position.depth -= magnitude },
+  forward: (magnitude: number) => { position.horizontal += magnitude; position.depth += magnitude * position.aim },
+  down: (magnitude: number) => { position.aim += magnitude },
+  up: (magnitude: number) => { position.aim -= magnitude },
 };
 
 data.forEach(rawMove => {
