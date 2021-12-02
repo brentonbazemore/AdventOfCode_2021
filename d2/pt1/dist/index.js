@@ -20,6 +20,23 @@ var __importStar = (this && this.__importStar) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const fs = __importStar(require("fs"));
-const rawData = fs.readFileSync('input.txt', 'utf8');
+// Toggle this to switch input files
+const testInput = false;
+// #################################
+const rawData = fs.readFileSync(testInput ? 'inputTest.txt' : 'input.txt', 'utf8');
 const data = rawData.split('\n');
-console.log(data);
+let position = {
+    horizontal: 0,
+    depth: 0,
+};
+const move = {
+    forward: (magnitude) => { position.horizontal += magnitude; },
+    down: (magnitude) => { position.depth += magnitude; },
+    up: (magnitude) => { position.depth -= magnitude; },
+};
+data.forEach(rawMove => {
+    const [action, magnitude] = rawMove.split(' ');
+    move[action](+magnitude);
+});
+console.log(position.horizontal * position.depth);
+//# sourceMappingURL=index.js.map
