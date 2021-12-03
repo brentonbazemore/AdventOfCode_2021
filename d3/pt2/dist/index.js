@@ -25,28 +25,74 @@ const testInput = false;
 // #################################
 const rawData = fs.readFileSync(testInput ? 'inputTest.txt' : 'input.txt', 'utf8');
 const data = rawData.split('\n');
-const freqMap = {};
-for (let i = 0; i < data.length; i++) {
-    const row = data[i];
-    for (let j = 0; j < row.length; j++) {
-        freqMap[j] = (freqMap[j] || 0) + +row[j];
+const buildFreqMap = (fullData) => {
+    const freqMap = {};
+    for (let i = 0; i < fullData.length; i++) {
+        const row = fullData[i];
+        for (let j = 0; j < row.length; j++) {
+            freqMap[j] = (freqMap[j] || 0) + +row[j];
+        }
     }
-}
-let gamma = '';
-let epsilon = '';
-Object.keys(freqMap).forEach((column) => {
-    if (freqMap[+column] > (data.length / 2)) {
-        gamma += '1';
-        epsilon += '0';
+    const analyzedFreq = {};
+    Object.keys(freqMap).forEach((column) => {
+        if (freqMap[+column] >= (fullData.length / 2)) {
+            analyzedFreq[+column] = 1;
+        }
+        else {
+            analyzedFreq[+column] = 0;
+        }
+    });
+    return analyzedFreq;
+};
+// const freqMap: { [column: number]: number } = {};
+// for (let i = 0; i < data.length; i++) {
+//   const row = data[i];
+//   for (let j = 0; j < row.length; j++) {
+//     freqMap[j] = (freqMap[j] || 0) + +row[j];
+//   }
+// }
+// const analyzedFreq: { [column: number]: number } = {};
+// Object.keys(freqMap).forEach((column) => {
+//   if (freqMap[+column] >= (data.length / 2)) {
+//     analyzedFreq[+column] = 1;
+//   } else {
+//     analyzedFreq[+column] = 0;
+//   }
+// });
+const freq = buildFreqMap(data);
+console.log(freq);
+// console.log(freqMap);
+// console.log(analyzedFreq);
+const filtOxy = (dataSet, freqs, column) => {
+    const filtered = dataSet.filter(row => +row[column] === freqs[column]);
+    if (filtered.length > 1) {
+        const newFreqs = buildFreqMap(filtered);
+        return filtOxy(filtered, newFreqs, column + 1);
     }
     else {
-        gamma += '0';
-        epsilon += '1';
+        return filtered[0];
     }
-});
-const decGamma = parseInt(gamma, 2);
-const decEpsilon = parseInt(epsilon, 2);
-console.log(freqMap);
-console.log({ gamma, epsilon });
-console.log(decGamma * decEpsilon);
+};
+const filtCo2 = (dataSet, freqs, column) => {
+    const filtered = dataSet.filter(row => +row[column] !== freqs[column]);
+    if (filtered.length > 1) {
+        const newFreqs = buildFreqMap(filtered);
+        return filtCo2(filtered, newFreqs, column + 1);
+    }
+    else {
+        return filtered[0];
+    }
+};
+const oxygenB = filtOxy(data, freq, 0);
+const co2B = filtCo2(data, freq, 0);
+const oxygenD = parseInt(oxygenB, 2);
+const co2D = parseInt(co2B, 2);
+console.log(oxygenB, co2B);
+console.log(oxygenD, co2D);
+console.log(oxygenD * co2D);
+// const f1 = data.filter((row) => +row[0] === analyzedFreq[0]);
+// const f2 = f1.filter((row) => +row[1] === analyzedFreq[1]);
+// const f3 = f2.filter((row) => +row[2] === analyzedFreq[2]);
+// const f4 = f3.filter((row) => +row[3] === analyzedFreq[3]);
+// console.log(f4);
 //# sourceMappingURL=index.js.map

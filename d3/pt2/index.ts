@@ -7,29 +7,57 @@ const testInput = false;
 const rawData: string = fs.readFileSync(testInput ? 'inputTest.txt' : 'input.txt', 'utf8');
 const data: string[] = rawData.split('\n');
 
-const freqMap: { [column: number]: number } = {};
-for (let i = 0; i < data.length; i++) {
-  const row = data[i];
-  for (let j = 0; j < row.length; j++) {
-    freqMap[j] = (freqMap[j] || 0) + +row[j];
+const buildFreqMap = (fullData: string[]) => {
+  const freqMap: { [column: number]: number } = {};
+  for (let i = 0; i < fullData.length; i++) {
+    const row = fullData[i];
+    for (let j = 0; j < row.length; j++) {
+      freqMap[j] = (freqMap[j] || 0) + +row[j];
+    }
+  }
+
+  const analyzedFreq: { [column: number]: number } = {};
+  Object.keys(freqMap).forEach((column) => {
+    if (freqMap[+column] >= (fullData.length / 2)) {
+      analyzedFreq[+column] = 1;
+    } else {
+      analyzedFreq[+column] = 0;
+    }
+  });
+
+  return analyzedFreq;
+};
+
+const freq = buildFreqMap(data);
+
+const filtOxy = (dataSet: string[], freqs: { [column: number]: number }, column: number): string => {
+  const filtered = dataSet.filter(row => +row[column] === freqs[column]);
+  
+  if (filtered.length > 1) {
+    const newFreqs = buildFreqMap(filtered);
+    return filtOxy(filtered, newFreqs, column + 1);
+  } else {
+    return filtered[0];
   }
 }
 
-let gamma = '';
-let epsilon = '';
-Object.keys(freqMap).forEach((column) => {
-  if (freqMap[+column] > (data.length / 2)) {
-    gamma += '1';
-    epsilon += '0';
+const filtCo2 = (dataSet: string[], freqs: { [column: number]: number }, column: number): string => {
+  const filtered = dataSet.filter(row => +row[column] !== freqs[column]);
+
+  if (filtered.length > 1) {
+    const newFreqs = buildFreqMap(filtered);
+    return filtCo2(filtered, newFreqs, column + 1);
   } else {
-    gamma += '0';
-    epsilon += '1';
+    return filtered[0];
   }
-});
+}
 
-const decGamma = parseInt(gamma, 2);
-const decEpsilon = parseInt(epsilon, 2);
+const oxygenB = filtOxy(data, freq, 0);
+const co2B = filtCo2(data, freq, 0);
 
-console.log(freqMap);
-console.log({ gamma, epsilon });
-console.log(decGamma * decEpsilon);
+const oxygenD = parseInt(oxygenB, 2);
+const co2D = parseInt(co2B, 2);
+
+console.log(oxygenB, co2B);
+console.log(oxygenD, co2D);
+console.log(oxygenD * co2D);
