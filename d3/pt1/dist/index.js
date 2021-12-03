@@ -20,6 +20,33 @@ var __importStar = (this && this.__importStar) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const fs = __importStar(require("fs"));
-const rawData = fs.readFileSync('input.txt', 'utf8');
+// Toggle this to switch input files
+const testInput = false;
+// #################################
+const rawData = fs.readFileSync(testInput ? 'inputTest.txt' : 'input.txt', 'utf8');
 const data = rawData.split('\n');
-console.log(data);
+const freqMap = {};
+for (let i = 0; i < data.length; i++) {
+    const row = data[i];
+    for (let j = 0; j < row.length; j++) {
+        freqMap[j] = (freqMap[j] || 0) + +row[j];
+    }
+}
+let gamma = '';
+let epsilon = '';
+Object.keys(freqMap).forEach((column) => {
+    if (freqMap[+column] > (data.length / 2)) {
+        gamma += '1';
+        epsilon += '0';
+    }
+    else {
+        gamma += '0';
+        epsilon += '1';
+    }
+});
+const decGamma = parseInt(gamma, 2);
+const decEpsilon = parseInt(epsilon, 2);
+console.log(freqMap);
+console.log({ gamma, epsilon });
+console.log(decGamma * decEpsilon);
+//# sourceMappingURL=index.js.map
