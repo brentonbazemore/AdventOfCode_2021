@@ -30,13 +30,17 @@ const realNumbers = '49,48,98,84,71,59,37,36,6,21,46,30,5,33,3,62,63,45,43,35,65
 const numbersString = testInput ? testNumbers : realNumbers;
 const drawnNumbers = numbersString.split(',');
 const boardList = [];
-let board = {};
+let board = {
+    winState: { hasWon: false, drawNum: 0, winStep: 0 },
+};
 let k = 0; // This keeps track of local board row...
 for (let i = 0; i < data.length; i++) {
-    const row = data[i].split(' ').filter(s => s !== '');
+    const row = data[i].split(' ').filter((s) => s !== '');
     if (row.length === 0) {
         boardList.push(board);
-        board = {};
+        board = {
+            winState: { hasWon: false, drawNum: 0, winStep: 0 },
+        };
         k = 0;
         continue;
     }
@@ -59,7 +63,7 @@ const markBoard = (val, board) => {
 const checkWin = (board) => {
     // check row win
     for (let i = 0; i < 5; i++) {
-        const isFullRow = Object.values(board[i]).every(item => item.isChecked);
+        const isFullRow = Object.values(board[i]).every((item) => item.isChecked);
         if (isFullRow) {
             return true;
         }
@@ -89,14 +93,21 @@ const sumNums = (board) => {
     }
     return sum;
 };
+let lastBoardToWin = {};
 for (let d = 0; d < drawnNumbers.length; d++) {
     for (let i = 0; i < boardList.length; i++) {
-        markBoard(+drawnNumbers[d], boardList[i]);
-        if (checkWin(boardList[i])) {
-            console.log('winner on board', i, 'winning number', drawnNumbers[d]);
-            console.log(sumNums(boardList[i]) * +drawnNumbers[d]);
-            throw new Error('done');
+        if (!boardList[i].winState.hasWon) {
+            markBoard(+drawnNumbers[d], boardList[i]);
+            if (checkWin(boardList[i])) {
+                boardList[i].winState.hasWon = true;
+                boardList[i].winState.drawNum = +drawnNumbers[d];
+                boardList[i].winState.winStep = d;
+                lastBoardToWin = boardList[i];
+            }
         }
     }
 }
+console.log(sumNums(lastBoardToWin));
+console.log(lastBoardToWin.winState.drawNum);
+console.log(sumNums(lastBoardToWin) * +lastBoardToWin.winState.drawNum);
 //# sourceMappingURL=index.js.map
