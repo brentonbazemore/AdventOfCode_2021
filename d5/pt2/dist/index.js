@@ -79,12 +79,36 @@ const fillHorizontal = (line) => {
         incrementGridItem(line.start.x, i);
     }
 };
+const fillDiagonal = (line) => {
+    let steps = Math.abs(line.start.x - line.end.x);
+    let changeX;
+    if (line.start.x > line.end.x) {
+        changeX = (num) => num - 1;
+    }
+    else {
+        changeX = (num) => num + 1;
+    }
+    let changeY;
+    if (line.start.y > line.end.y) {
+        changeY = (num) => num - 1;
+    }
+    else {
+        changeY = (num) => num + 1;
+    }
+    // this is bad but yolo
+    for (let i = { x: line.start.x, y: line.start.y, step: 0 }; i.step <= steps; i = { x: changeX(i.x), y: changeY(i.y), step: i.step + 1 }) {
+        incrementGridItem(i.x, i.y);
+    }
+};
 lines.forEach((line) => {
     if (line.orientation === Orientation.Horizontal) {
         fillHorizontal(line);
     }
     else if (line.orientation === Orientation.Vertical) {
         fillVertical(line);
+    }
+    else if (line.orientation === Orientation.Diagonal) {
+        fillDiagonal(line);
     }
 });
 // Logging
