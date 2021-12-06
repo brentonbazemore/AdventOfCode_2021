@@ -20,6 +20,40 @@ var __importStar = (this && this.__importStar) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const fs = __importStar(require("fs"));
-const rawData = fs.readFileSync('input.txt', 'utf8');
-const data = rawData.split('\n');
-console.log(data);
+// Toggle this to switch input files
+const testInput = false;
+// #################################
+const rawData = fs.readFileSync(testInput ? 'inputTest.txt' : 'input.txt', 'utf8');
+const data = rawData.split('\n')[0].split(',').map(n => +n);
+class LanternFish {
+    constructor(cycle) {
+        this.timer = cycle;
+    }
+    tick() {
+        let out = null;
+        if (this.timer === 0) {
+            // spawn new fish and add to list
+            out = new LanternFish(8);
+            this.timer = 6;
+        }
+        else {
+            this.timer--;
+        }
+        return out;
+    }
+}
+// spawn initial fish
+const fishes = data.map((num) => new LanternFish(num));
+const DAYS = 80;
+for (let i = 0; i < DAYS; i++) {
+    const newFishes = [];
+    fishes.forEach((fish) => {
+        const newFish = fish.tick();
+        if (newFish) {
+            newFishes.push(newFish);
+        }
+    });
+    fishes.push(...newFishes);
+}
+console.log(fishes.length);
+//# sourceMappingURL=index.js.map
