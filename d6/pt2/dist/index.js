@@ -20,40 +20,51 @@ var __importStar = (this && this.__importStar) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const fs = __importStar(require("fs"));
+console.time();
 // Toggle this to switch input files
 const testInput = false;
 // #################################
 const rawData = fs.readFileSync(testInput ? 'inputTest.txt' : 'input.txt', 'utf8');
 const data = rawData.split('\n')[0].split(',').map(n => +n);
 class LanternFish {
-    constructor(cycle) {
+    constructor(cycle, count) {
         this.timer = cycle;
+        this.count = count;
     }
     tick() {
-        let out = null;
+        let spawn = false;
         if (this.timer === 0) {
             // spawn new fish and add to list
-            out = new LanternFish(8);
+            spawn = true;
             this.timer = 6;
         }
         else {
             this.timer--;
         }
-        return out;
+        return spawn;
     }
 }
 // spawn initial fish
-const fishes = data.map((num) => new LanternFish(num));
-const DAYS = 80;
+let fishFreq = {};
+data.forEach((num) => {
+    fishFreq[num] = (fishFreq[num] || 0) + 1;
+});
+const fishes = Object.keys(fishFreq).map((timer) => new LanternFish(+timer, fishFreq[+timer]));
+console.log(fishes);
+const DAYS = 256;
 for (let i = 0; i < DAYS; i++) {
-    const newFishes = [];
+    let newFishCount = 0;
     fishes.forEach((fish) => {
-        const newFish = fish.tick();
-        if (newFish) {
-            newFishes.push(newFish);
+        const spawnNewFish = fish.tick();
+        if (spawnNewFish) {
+            newFishCount += fish.count;
         }
     });
-    fishes.push(...newFishes);
+    fishes.push(new LanternFish(8, newFishCount));
 }
+let total = 0;
+fishes.forEach(f => total += f.count);
+console.log(total);
 console.log(fishes.length);
+console.timeEnd();
 //# sourceMappingURL=index.js.map
