@@ -12,10 +12,11 @@ const max = Math.max(...data);
 
 let results: { [i: number]: number } = {};
 for (let i = min; i < max; i++) {
-  console.log(i);
   let total = 0;
   data.forEach((distance) => {
-    total += Math.abs(distance - i);
+    let trueDist = Math.abs(distance - i);
+    const fuelBurn = (trueDist * (trueDist + 1)) / 2;
+    total += fuelBurn
   });
   results[i] = total;
 }
