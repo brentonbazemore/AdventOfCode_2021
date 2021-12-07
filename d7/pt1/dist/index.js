@@ -20,6 +20,35 @@ var __importStar = (this && this.__importStar) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const fs = __importStar(require("fs"));
-const rawData = fs.readFileSync('input.txt', 'utf8');
-const data = rawData.split('\n');
-console.log(data);
+// Toggle this to switch input files
+const testInput = false;
+// #################################
+const rawData = fs.readFileSync(testInput ? 'inputTest.txt' : 'input.txt', 'utf8');
+const data = rawData.split('\n')[0].split(',').map(n => +n);
+const min = Math.min(...data);
+const max = Math.max(...data);
+let results = {};
+for (let i = min; i < max; i++) {
+    console.log(i);
+    let total = 0;
+    data.forEach((distance) => {
+        total += Math.abs(distance - i);
+    });
+    results[i] = total;
+}
+// console.log(results);
+let smallest = Infinity;
+Object.keys(results).forEach((pos) => {
+    if (results[+pos] < smallest) {
+        smallest = results[+pos];
+    }
+});
+console.log(smallest);
+// let total = 0;
+// let mid = Math.floor(data.length / 2);
+// data.forEach((distance) => {
+//   total += Math.abs(distance - mid);
+// });
+// const find = () => {
+// }
+//# sourceMappingURL=index.js.map
