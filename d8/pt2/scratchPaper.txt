@@ -1,0 +1,32 @@
+ a
+b c
+ d
+e f
+ g
+
+acf = 7
+cf = 1
+bcdf = 4
+abcdefg = 8
+
+// 5
+abdfg - acf = bdg;
+abdfg - cf = abdg;
+abdfg - bcdf = ag;
+
+// 2
+acdeg - acf = deg;
+acdeg - cf = adeg;
+acdeg - bcdf = aeg;
+acdeg - abdfg = ce;
+
+// 6
+abdefg - acf = bdeg;
+abdefg - cf = abdeg;
+abdefg - acdeg = bf;
+
+// 9
+abcdfg - acf = bdg;
+abcdfg - cf = abdg;
+abcdfg - abdefg = c;
+abcdfg - abdfg = c;
