@@ -47,13 +47,49 @@ const checkHeight = (grid, x, y) => {
     const value = grid[x][y];
     return value < Math.min(...surrounding);
 };
-let sum = 0;
+class LowPoint {
+    constructor(grid, x, y) {
+        var _a;
+        this.x = x;
+        this.y = y;
+        this.value = (_a = grid[x]) === null || _a === void 0 ? void 0 : _a[y];
+        this.key = `${x}_${y}`;
+    }
+}
+const lowPoints = [];
 for (let x = 0; x < WIDTH; x++) {
     for (let y = 0; y < HEIGHT; y++) {
         if (checkHeight(heightMap, x, y)) {
-            sum += (heightMap[x][y] + 1);
+            // lowPoints.push({ x, y, value: heightMap[x][y], key: `${x}_${y}` });
+            lowPoints.push(new LowPoint(heightMap, x, y));
         }
     }
 }
-console.log(sum);
+const findBasin = (grid, lowPoint, seen) => {
+    const { x, y } = lowPoint;
+    const surroundingPoints = [
+        new LowPoint(grid, x, y + 1),
+        new LowPoint(grid, x + 1, y),
+        new LowPoint(grid, x, y - 1),
+        new LowPoint(grid, x - 1, y)
+    ].filter(point => point.value !== 9 && point.value != null && !seen.has(point.key));
+    // let count = surroundingPoints.length;
+    surroundingPoints.forEach((p) => {
+        seen.add(p.key);
+        findBasin(grid, p, seen);
+        // count += findBasin(grid, p, seen);
+    });
+    return seen.size;
+};
+let s = new Set();
+s.add(lowPoints[1].key);
+// const basins = findBasin(heightMap, lowPoints[1], s);
+let basins = lowPoints.map((point) => {
+    const set = new Set();
+    set.add(point.key);
+    return findBasin(heightMap, point, set);
+});
+basins = basins.sort((a, b) => b - a);
+const out = basins[0] * basins[1] * basins[2];
+console.log(out);
 //# sourceMappingURL=index.js.map
