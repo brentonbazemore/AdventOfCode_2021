@@ -26,11 +26,7 @@ let inverseSymbol: { [key: string]: string } = {
 };
 
 let sum = 0;
-data.forEach((line, lineI) => {
-  const parStack = [];
-  const braStack = [];
-  const curStack = [];
-  const poiStack = [];
+data.forEach((line) => {
   const stack = [];
 
   for (let i = 0; i < line.length; i++) {
