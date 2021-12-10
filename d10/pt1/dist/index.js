@@ -20,6 +20,46 @@ var __importStar = (this && this.__importStar) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const fs = __importStar(require("fs"));
-const rawData = fs.readFileSync('input.txt', 'utf8');
+// Toggle this to switch input files
+const testInput = false;
+// #################################
+const rawData = fs.readFileSync(testInput ? 'inputTest.txt' : 'input.txt', 'utf8');
 const data = rawData.split('\n');
-console.log(data);
+let errorScore = {
+    ')': 3,
+    ']': 57,
+    '}': 1197,
+    '>': 25137,
+};
+let inverseSymbol = {
+    ')': '(',
+    ']': '[',
+    '}': '{',
+    '>': '<',
+    '(': ')',
+    '[': ']',
+    '{': '}',
+    '<': '>',
+};
+let sum = 0;
+data.forEach((line, lineI) => {
+    const parStack = [];
+    const braStack = [];
+    const curStack = [];
+    const poiStack = [];
+    const stack = [];
+    for (let i = 0; i < line.length; i++) {
+        if (['(', '[', '{', '<'].includes(line[i])) {
+            stack.push(line[i]);
+        }
+        else if (line[i] === inverseSymbol[stack[stack.length - 1]]) {
+            stack.pop();
+        }
+        else {
+            sum += errorScore[line[i]];
+            break;
+        }
+    }
+});
+console.log(sum);
+//# sourceMappingURL=index.js.map
