@@ -26,10 +26,10 @@ const testInput = false;
 const rawData = fs.readFileSync(testInput ? 'inputTest.txt' : 'input.txt', 'utf8');
 const data = rawData.split('\n');
 let errorScore = {
-    ')': 3,
-    ']': 57,
-    '}': 1197,
-    '>': 25137,
+    '(': 1,
+    '[': 2,
+    '{': 3,
+    '<': 4,
 };
 let inverseSymbol = {
     ')': '(',
@@ -42,11 +42,7 @@ let inverseSymbol = {
     '<': '>',
 };
 let sum = 0;
-data.forEach((line, lineI) => {
-    const parStack = [];
-    const braStack = [];
-    const curStack = [];
-    const poiStack = [];
+const cleanLines = data.filter((line) => {
     const stack = [];
     for (let i = 0; i < line.length; i++) {
         if (['(', '[', '{', '<'].includes(line[i])) {
@@ -56,10 +52,33 @@ data.forEach((line, lineI) => {
             stack.pop();
         }
         else {
-            sum += errorScore[line[i]];
-            break;
+            return false;
         }
     }
+    return true;
 });
-console.log(sum);
+let scores = cleanLines.map((line) => {
+    const stack = [];
+    for (let i = 0; i < line.length; i++) {
+        if (['(', '[', '{', '<'].includes(line[i])) {
+            stack.push(line[i]);
+        }
+        else if (line[i] === inverseSymbol[stack[stack.length - 1]]) {
+            stack.pop();
+        }
+        else {
+            console.log('is this possible?');
+        }
+    }
+    const stackLength = stack.length;
+    let score = 0;
+    for (let i = 0; i < stackLength; i++) {
+        score *= 5;
+        score += errorScore[stack.pop()];
+    }
+    return score;
+});
+scores = scores.sort((a, b) => a - b);
+console.log(scores[Math.floor(scores.length / 2)]);
+// console.log(cleanLines);
 //# sourceMappingURL=index.js.map
