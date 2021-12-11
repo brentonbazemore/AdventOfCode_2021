@@ -100,19 +100,20 @@ const simulate = (turn) => {
     }
     return flashCount;
 };
-const TURN_COUNT = 100;
-let sum = 0;
+const TURN_COUNT = 1000000;
 for (let t = 0; t < TURN_COUNT; t++) {
-    sum += simulate(t);
+    if (simulate(t) === HEIGHT * WIDTH) {
+        console.log(t);
+        break;
+    }
 }
-console.log(sum);
 // Logging
-// for (let j = 0; j < 10; j++) {
-//   let str = '';
-//   for (let i = 0; i < 10; i++) {
-//     str += `${(grid[i] && grid[i][j]).lightLevel}`;
-//   }
-//   console.log(str);
-// }
+for (let j = 0; j < 10; j++) {
+    let str = '';
+    for (let i = 0; i < 10; i++) {
+        str += `${(grid[i] && grid[i][j]).lightLevel}`;
+    }
+    console.log(str);
+}
 // console.log(grid);
 //# sourceMappingURL=index.js.map
