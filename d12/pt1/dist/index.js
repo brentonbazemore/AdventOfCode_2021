@@ -20,6 +20,50 @@ var __importStar = (this && this.__importStar) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const fs = __importStar(require("fs"));
-const rawData = fs.readFileSync('input.txt', 'utf8');
+// Toggle this to switch input files
+const testInput = false;
+// #################################
+const rawData = fs.readFileSync(testInput ? 'inputTest.txt' : 'input.txt', 'utf8');
 const data = rawData.split('\n');
-console.log(data);
+class Cave {
+    constructor(name) {
+        this.connections = new Set();
+        this.name = name;
+        this.type = name === name.toUpperCase() ? 'BIG' : 'SMALL';
+    }
+    addConnection(connectionName) {
+        this.connections.add(connectionName);
+    }
+}
+const caves = {};
+data.forEach((d) => {
+    const [a, b] = d.split('-');
+    if (!caves[a]) {
+        caves[a] = new Cave(a);
+    }
+    if (!caves[b]) {
+        caves[b] = new Cave(b);
+    }
+    caves[a].addConnection(b);
+    caves[b].addConnection(a);
+});
+// const paths = [];
+let pathsToEnd = 0;
+const findPath = (curCave, pathSoFar) => {
+    if (pathSoFar[pathSoFar.length - 1] === curCave.name
+        || (curCave.type === 'SMALL' && pathSoFar.includes(curCave.name))) {
+        return;
+    }
+    pathSoFar += ',' + curCave.name;
+    if (curCave.name === 'end') {
+        pathsToEnd++;
+        return;
+        // paths.push(pathSoFar);
+    }
+    curCave.connections.forEach((nextCave) => {
+        findPath(caves[nextCave], pathSoFar);
+    });
+};
+findPath(caves['start'], '');
+console.log(pathsToEnd);
+//# sourceMappingURL=index.js.map
