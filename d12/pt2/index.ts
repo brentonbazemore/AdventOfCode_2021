@@ -39,27 +39,39 @@ data.forEach((d) => {
   caves[b].addConnection(a);
 });
 
-
-// const paths = [];
 let pathsToEnd = 0;
-const findPath = (curCave: Cave, pathSoFar: string) => {
-  if (pathSoFar[pathSoFar.length - 1] === curCave.name
-    || (curCave.type === 'SMALL' && pathSoFar.includes(curCave.name))) {
+const findPath = (curCave: Cave, pathSoFar: string, has2SmallsAlready: boolean) => {
+  if (pathSoFar[pathSoFar.length - 1] === curCave.name) {
     return;
   }
 
+  if (curCave.name === 'start' && pathSoFar.length !== 0) {
+    return;
+  }
+
+  if (curCave.type === 'SMALL') {
+    if (has2SmallsAlready && pathSoFar.includes(curCave.name)) {
+      return;
+    }
+  }
+
   pathSoFar += ',' + curCave.name;
+
+  if (!has2SmallsAlready && curCave.type === 'SMALL') {
+    if (pathSoFar.split(curCave.name).length - 1 === 2) {
+      has2SmallsAlready = true;
+    }
+  }
   
   if (curCave.name === 'end') {
     pathsToEnd++;
     return;
-    // paths.push(pathSoFar);
   }
 
   curCave.connections.forEach((nextCave) => {
-    findPath(caves[nextCave], pathSoFar);
+    findPath(caves[nextCave], pathSoFar, has2SmallsAlready);
   });
 };
 
-findPath(caves['start'], '');
+findPath(caves['start'], '', false);
 console.log(pathsToEnd);
