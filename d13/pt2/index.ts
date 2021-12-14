@@ -93,39 +93,18 @@ const foldX = (position: number, grid: Grid) => {
 }
 
 let latestGrid = initGrid;
-try {
-  instructions.forEach((inst) => {
-    if (inst.variable === 'x') {
-      latestGrid = foldX(inst.value, latestGrid);
-    } else {
-      latestGrid = foldY(inst.value, latestGrid);
-    }
-  
-    throw new Error('finished pt1');
-  });
-} catch (e) {
-
-}
-
-// const g = foldY(instructions[0].value, initGrid);
-// const g2 = foldX(instructions[1].value, g);
-
-let sum = 0;
-for (let y = 0; y <= dimensions.y; y++) {
-  for (let x = 0; x <= dimensions.x; x++) {
-    if (latestGrid[x]?.[y]) {
-      sum++;
-    }
+instructions.forEach((inst) => {
+  if (inst.variable === 'x') {
+    latestGrid = foldX(inst.value, latestGrid);
+  } else {
+    latestGrid = foldY(inst.value, latestGrid);
   }
-}
-// for (let y = 0; y <= dimensions.y; y++) {
-//   let str = '';
-//   for (let x = 0; x <= dimensions.x; x++) {
-//     str += latestGrid[x]?.[y] ? '#' : '.';
-//   }
-//   console.log(str);
-// }
+});
 
-// console.log(grid);
-// console.log(instructions);
-console.log(sum);
+for (let y = 0; y < 6; y++) {
+  let str = '';
+  for (let x = 0; x < 40; x++) {
+    str += latestGrid[x]?.[y] ? '#' : '.';
+  }
+  console.log(str);
+}

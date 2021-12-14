@@ -100,37 +100,19 @@ const foldX = (position, grid) => {
     return newGrid;
 };
 let latestGrid = initGrid;
-try {
-    instructions.forEach((inst) => {
-        if (inst.variable === 'x') {
-            latestGrid = foldX(inst.value, latestGrid);
-        }
-        else {
-            latestGrid = foldY(inst.value, latestGrid);
-        }
-        throw new Error('finished pt1');
-    });
-}
-catch (e) {
-}
-// const g = foldY(instructions[0].value, initGrid);
-// const g2 = foldX(instructions[1].value, g);
-let sum = 0;
-for (let y = 0; y <= dimensions.y; y++) {
-    for (let x = 0; x <= dimensions.x; x++) {
-        if ((_a = latestGrid[x]) === null || _a === void 0 ? void 0 : _a[y]) {
-            sum++;
-        }
+instructions.forEach((inst) => {
+    if (inst.variable === 'x') {
+        latestGrid = foldX(inst.value, latestGrid);
     }
+    else {
+        latestGrid = foldY(inst.value, latestGrid);
+    }
+});
+for (let y = 0; y < 6; y++) {
+    let str = '';
+    for (let x = 0; x < 40; x++) {
+        str += ((_a = latestGrid[x]) === null || _a === void 0 ? void 0 : _a[y]) ? '#' : '.';
+    }
+    console.log(str);
 }
-// for (let y = 0; y <= dimensions.y; y++) {
-//   let str = '';
-//   for (let x = 0; x <= dimensions.x; x++) {
-//     str += latestGrid[x]?.[y] ? '#' : '.';
-//   }
-//   console.log(str);
-// }
-// console.log(grid);
-// console.log(instructions);
-console.log(sum);
 //# sourceMappingURL=index.js.map
