@@ -1,3 +1,4 @@
+// Source: https://github.com/noamsauerutley/shortest-path
 const shortestDistanceNode = (distances, visited) => {
 	let shortest = null;
 
