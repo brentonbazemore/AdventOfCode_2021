@@ -1,5 +1,5 @@
 import * as fs from 'fs';
-import findShortestPath = require('./dijkstras');
+import Graph from 'node-dijkstra';
 
 // Toggle this to switch input files
 const testInput = false;
@@ -10,10 +10,30 @@ const data: string[] = rawData.split('\n');
 
 const genKey = (x: number, y: number) => `${x}_${y}`;
 
-const cavernGraph: { [key: string]: { [key: string]: number }} = {};
+const TRUE_WIDTH = data[0].length;
+const TRUE_HEIGHT = data.length;
+const getPoint = (x: number, y: number) => {
+  const xOffset = Math.floor(x / TRUE_WIDTH);
+  const yOffset = Math.floor(y / TRUE_HEIGHT);
 
-const WIDTH = data[0].length;
-const HEIGHT = data.length;
+  const value = +data[y % TRUE_HEIGHT][x % TRUE_WIDTH] + xOffset + yOffset;
+  return value > 9 ? value - 9 : value;
+}
+
+const fullMap: { [x: number]: { [y: number]: number }} = {};
+const WIDTH = TRUE_WIDTH * 5;
+const HEIGHT = TRUE_HEIGHT * 5;
+for (let x = 0; x < WIDTH; x++) {
+  for (let y = 0; y < HEIGHT; y++) {
+    if (!fullMap[x]) {
+      fullMap[x] = {};
+    }
+
+    fullMap[x][y] = getPoint(x, y);
+  }
+}
+
+const route = new Graph();
 for (let x = 0; x < WIDTH; x++) {
   for (let y = 0; y < HEIGHT; y++) {
     const neighbors = [
@@ -25,14 +45,21 @@ for (let x = 0; x < WIDTH; x++) {
 
     const adj: { [key: string]: number } = {};
     neighbors.forEach(([nx, ny]) => {
-      if (data[ny]?.[nx] != null) {
-        adj[genKey(nx, ny)] = +data[ny][nx];
+      if (fullMap[nx]?.[ny] != null) {
+        adj[genKey(nx, ny)] = +fullMap[nx][ny];
       }
     });
 
-    cavernGraph[genKey(x, y)] = adj;
+    route.addNode(genKey(x, y), adj);
   }
 }
 
-const out = findShortestPath(cavernGraph, genKey(0, 0), genKey(WIDTH - 1, HEIGHT - 1));
-console.log(out.distance);
+const out: string[] = route.path(genKey(0, 0), genKey(WIDTH - 1, HEIGHT - 1));
+let sum = 0;
+out.shift();
+out.forEach((coord: string) => {
+  const [x, y] = coord.split('_').map(v => +v);
+  sum += fullMap[x][y];
+});
+
+console.log('result', sum);

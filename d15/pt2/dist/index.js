@@ -18,18 +18,38 @@ var __importStar = (this && this.__importStar) || function (mod) {
     __setModuleDefault(result, mod);
     return result;
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 const fs = __importStar(require("fs"));
-const findShortestPath = require("./dijkstras2");
+const node_dijkstra_1 = __importDefault(require("node-dijkstra"));
 // Toggle this to switch input files
 const testInput = false;
 // #################################
 const rawData = fs.readFileSync(testInput ? 'inputTest.txt' : 'input.txt', 'utf8');
 const data = rawData.split('\n');
 const genKey = (x, y) => `${x}_${y}`;
-const cavernGraph = {};
-const WIDTH = data[0].length;
-const HEIGHT = data.length;
+const TRUE_WIDTH = data[0].length;
+const TRUE_HEIGHT = data.length;
+const getPoint = (x, y) => {
+    const xOffset = Math.floor(x / TRUE_WIDTH);
+    const yOffset = Math.floor(y / TRUE_HEIGHT);
+    const value = +data[y % TRUE_HEIGHT][x % TRUE_WIDTH] + xOffset + yOffset;
+    return value > 9 ? value - 9 : value;
+};
+const fullMap = {};
+const WIDTH = TRUE_WIDTH * 5;
+const HEIGHT = TRUE_HEIGHT * 5;
+for (let x = 0; x < WIDTH; x++) {
+    for (let y = 0; y < HEIGHT; y++) {
+        if (!fullMap[x]) {
+            fullMap[x] = {};
+        }
+        fullMap[x][y] = getPoint(x, y);
+    }
+}
+const route = new node_dijkstra_1.default();
 for (let x = 0; x < WIDTH; x++) {
     for (let y = 0; y < HEIGHT; y++) {
         const neighbors = [
@@ -41,51 +61,19 @@ for (let x = 0; x < WIDTH; x++) {
         const adj = {};
         neighbors.forEach(([nx, ny]) => {
             var _a;
-            if (((_a = data[ny]) === null || _a === void 0 ? void 0 : _a[nx]) != null) {
-                adj[genKey(nx, ny)] = +data[ny][nx];
+            if (((_a = fullMap[nx]) === null || _a === void 0 ? void 0 : _a[ny]) != null) {
+                adj[genKey(nx, ny)] = +fullMap[nx][ny];
             }
         });
-        cavernGraph[genKey(x, y)] = adj;
+        route.addNode(genKey(x, y), adj);
     }
 }
-const out = findShortestPath(cavernGraph, genKey(0, 0), genKey(WIDTH - 1, HEIGHT - 1));
-console.log(out.distance);
-// for (let x = 0; x < WIDTH; x++) {
-//   for (let y = 0; y < HEIGHT; y++) {
-//     const neighbors = [
-//       [x, y + 1],
-//       [x + 1, y],
-//       [x, y - 1],
-//       [x - 1, y]
-//     ];
-//     const top = data[y + 1]?.[x];
-//     const right = data[y]?.[x + 1];
-//     const bottom = data[y - 1]?.[x];
-//     const left = data[y]?.[x - 1];
-//     const adj: { [key: string]: number } = {};
-//     neighbors.forEach(([nx, ny]) => {
-//       if (data[ny]?.[nx] != null) {
-//         adj[genKey(nx, ny)] = +data[ny][nx];
-//       }
-//     });
-//     cavernMap[genKey(x, y)] = adj;
-//   }
-// }
-// for (let i = 0; i < data.length; i++) {
-//   const row = data[i];
-//   for (let j = 0; j < row.length; j++) {
-//     if (!cavernMap[j]) {
-//       cavernMap[j] = {};
-//     }
-//     cavernMap[j][i] = +row[j];
-//   }
-// }
-// const graph = new dijkstras.Graph(cavernMap);
-// for (let y = 0; y < 10; y++) {
-//   let str = '';
-//   for (let x = 0; x < 10; x++) {
-//     str += cavernMap[x][y];
-//   }
-//   console.log(str);
-// }
+const out = route.path(genKey(0, 0), genKey(WIDTH - 1, HEIGHT - 1));
+let sum = 0;
+out.shift();
+out.forEach((coord) => {
+    const [x, y] = coord.split('_').map(v => +v);
+    sum += fullMap[x][y];
+});
+console.log('result', sum);
 //# sourceMappingURL=index.js.map

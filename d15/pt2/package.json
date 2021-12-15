@@ -12,6 +12,10 @@
   "license": "ISC",
   "devDependencies": {
     "@types/node": "^16.11.11",
+    "@types/node-dijkstra": "^2.5.2",
     "typescript": "^4.5.2"
+  },
+  "dependencies": {
+    "node-dijkstra": "^2.5.0"
   }
 }
