@@ -68,108 +68,83 @@ const incGVS = (value: number) => {
 const parsePacketByLength = (pointer: number, length: number) => {
   console.log('length');
   const ogPointer = pointer;
+  const packets = [];
   while (pointer < (ogPointer + length)) {
-    const version = getVersion(pointer);
-    if (isNaN(version.value)) {
-      console.log('uh oh');
-    }
-    pointer = version.position;
-    if (pointer > bits.length) {
-      break;
-    }
-    incGVS(version.value);
-  
-    const type = getType(pointer);
-    pointer = type.position;
-  
-    if (type.value === 4) {
-      const literal = getLiteral(pointer);
-      pointer = literal.position;
-    } else {
-      const lengthType = getLengthType(pointer);
-      pointer = lengthType.position;
-      
-      if (lengthType.value === 0) {
-        const lengthInBits = getLengthInBits(pointer);
-        pointer = lengthInBits.position;
-      } else {
-        const subPacketCount = getSubPacketCount(pointer);
-        pointer = subPacketCount.position;
-      }
-    }
+    let packet = parsePacket(pointer);
+    pointer = packet.position;
+    packets.push(packet.value);
   }
 
-  return pointer;
+  return { position: pointer, values: packets };
 }
 
 const parsePacketByCount = (pointer: number, count: number) => {
   console.log('count');
   let seenPackets = 0;
+  const packets = [];
   while (seenPackets < count) {
-    const version = getVersion(pointer);
-    pointer = version.position;
-    if (isNaN(version.value)) {
-      console.log('uh oh');
-    }
-    incGVS(version.value);
-  
-    const type = getType(pointer);
-    pointer = type.position;
-  
-    if (type.value === 4) {
-      const literal = getLiteral(pointer);
-      pointer = literal.position;
-    } else {
-      const lengthType = getLengthType(pointer);
-      pointer = lengthType.position;
-      
-      if (lengthType.value === 0) {
-        const lengthInBits = getLengthInBits(pointer);
-        pointer = lengthInBits.position;
-        pointer = parsePacketByLength(pointer, lengthInBits.value);
-      } else {
-        const subPacketCount = getSubPacketCount(pointer);
-        pointer = subPacketCount.position;
-        pointer = parsePacketByCount(pointer, subPacketCount.value);
-      }
-    }
+    let packet = parsePacket(pointer);
+    pointer = packet.position;
+    packets.push(packet.value);
 
     seenPackets++;
   }
 
-  return pointer;
+  return { position: pointer, values: packets };
 }
 
-const parsePacket = (position: number) => {
-  console.log('og');
-  const version = getVersion(position);
-  position = version.position;
-  if (isNaN(version.value)) {
-    console.log('uh oh');
-  }
+const parsePacket = (pointer: number): { position: number, value: number } => {
+  const version = getVersion(pointer);
+  pointer = version.position;
   incGVS(version.value);
 
-  const type = getType(position);
-  position = type.position;
+  const type = getType(pointer);
+  pointer = type.position;
 
+  let value;
   if (type.value === 4) {
-    const literal = getLiteral(position);
-    position = literal.position;
+    const literal = getLiteral(pointer);
+    pointer = literal.position;
+    value = literal.value;
   } else {
-    const lengthType = getLengthType(position);
-    position = lengthType.position;
+    const lengthType = getLengthType(pointer);
+    pointer = lengthType.position;
+    let packets;
     
+    let children;
     if (lengthType.value === 0) {
-      const lengthInBits = getLengthInBits(position);
-      position = lengthInBits.position;
-      position = parsePacketByLength(position, lengthInBits.value);
+      const lengthInBits = getLengthInBits(pointer);
+      pointer = lengthInBits.position;
+      children = parsePacketByLength(pointer, lengthInBits.value);
     } else {
-      const subPacketCount = getSubPacketCount(position);
-      position = subPacketCount.position;
-      position = parsePacketByCount(position, subPacketCount.value);
+      const subPacketCount = getSubPacketCount(pointer);
+      pointer = subPacketCount.position;
+      children = parsePacketByCount(pointer, subPacketCount.value);
+    }
+    pointer = children.position;
+    packets = children.values;
+
+    if (type.value === 0) {
+      value = packets.reduce((acc, cur) => acc + cur, 0);
+    } else if (type.value === 1) {
+      value = packets.reduce((acc, cur) => acc * cur, 1);
+    } else if (type.value === 2) {
+      value = Math.min(...packets);
+    } else if (type.value === 3) {
+      value = Math.max(...packets);
+    } else if (type.value === 5) {
+      value = +(packets[0] > packets[1]);
+    } else if (type.value === 6) {
+      value = +(packets[0] < packets[1]);
+    } else if (type.value === 7) {
+      value = +(packets[0] === packets[1]);
+    } else {
+      console.log('bruh');
+      value = 0;
     }
   }
+
+  return { position: pointer, value };
 }
 
-parsePacket(0);
-console.log(globalVersionSum);
+console.log(parsePacket(0));
