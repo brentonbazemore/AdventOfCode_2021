@@ -53,18 +53,17 @@ const calcSteps = (xVelocity, yVelocity) => {
         coords.x += xVelocity;
         coords.y += yVelocity;
         maxY = Math.max(maxY, coords.y);
-        if (coords.x >= x2) {
-            console.log('overshot');
-            return -1;
+        if (coords.x >= x2 + 1) {
+            // console.log('overshot');
+            return false;
         }
         if (coords.y < y1) {
-            console.log('too far down');
-            return -1;
+            // console.log('too far down');
+            return false;
         }
         if (coords.x >= x1 && coords.x <= x2
             && coords.y >= y1 && coords.y <= y2) {
-            console.log(maxY);
-            return maxY;
+            return true;
         }
         xVelocity = calculateXDecay(xVelocity);
         yVelocity = calculateYDecay(yVelocity);
@@ -74,12 +73,12 @@ const findShortestX = (xVelocity) => {
     let coords = { x: 0, y: y1 };
     while (true) {
         coords.x += xVelocity;
-        if (coords.x >= x2) {
-            console.log('overshot');
+        if (coords.x >= x2 + 1) {
+            // console.log('overshot');
             return false;
         }
         if (xVelocity === 0) {
-            console.log('stopped');
+            // console.log('stopped');
             return false;
         }
         if (coords.x >= x1 && coords.x <= x2) {
@@ -88,22 +87,22 @@ const findShortestX = (xVelocity) => {
         xVelocity = calculateXDecay(xVelocity);
     }
 };
-// assume y is correct, find shortest x;
-let shortestX = 0;
-for (let i = 0; i < x2; i++) {
+const Xes = [];
+for (let i = 0; i <= x2 + 1; i++) {
     if (findShortestX(i)) {
-        shortestX = i;
-        break;
+        Xes.push(i);
     }
 }
-console.log(shortestX);
+// console.log(Xes);
 // based on shortest x, calculate highest y
-let highestY = 0;
-for (let i = 0; i < 1000; i++) {
-    const height = calcSteps(shortestX, i);
-    if (height > 0) {
-        highestY = Math.max(highestY, height);
+const combos = [];
+Xes.forEach((x) => {
+    for (let i = -2000; i < 2000; i++) {
+        if (calcSteps(x, i)) {
+            combos.push(`${x}_${i}`);
+        }
     }
-}
-console.log(highestY);
+});
+console.log(combos.length);
+// console.log(highestY);
 //# sourceMappingURL=index.js.map
