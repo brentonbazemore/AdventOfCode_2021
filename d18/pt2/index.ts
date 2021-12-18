@@ -1,4 +1,7 @@
 import * as fs from 'fs';
+import 'lodash.permutations';
+import _ from 'lodash';
+
 
 // Toggle this to switch input files
 const testInput = false;
@@ -69,6 +72,9 @@ const findMarkedNode = (num: SnailfishNumber, path: string): { path: string } | 
   return null;
 }
 
+// To any future reader, I realize this is awful, but I was at my
+// wits end when I refactored this away from a more traditional
+// traversal pattern. Turns out this wasn't even the issue lol. 
 const findNextLeft = (num: SnailfishNumber, path: number[]) => {
   let deepCopy = JSON.parse(JSON.stringify(num));
   let node = deepCopy;
@@ -238,24 +244,9 @@ const reduce = (fullNum: SnailfishNumber) => {
     return true;
   }
 
-  console.log('no more reductions');
+  // console.log('no more reductions');
   return false;
 };
-
-let sum = JSON.parse(data[0]);
-for (let i = 1; i < data.length; i++) {
-  const line = data[i];
-  const num: SnailfishNumber = JSON.parse(line);
-  sum = add(sum, num);
-  while (true) {
-    if (!reduce(sum)) {
-      break;
-    }
-  }
-  console.log('\n\n\n\n\n\n');
-}
-
-console.log('sum', JSON.stringify(sum));
 
 const magnify = (fullNum: SnailfishNumber, path: string) => {
   const splitPath = path.length ? path.split(',').map(n => +n) : [];
@@ -285,15 +276,33 @@ const magnify = (fullNum: SnailfishNumber, path: string) => {
   return false;
 };
 
-let result = JSON.parse(JSON.stringify(sum));
-while (true) {
-  magnify(result, '');
-  if (result.every((n: number) => typeof n === 'number')) {
-    console.log(result[0] * 3 + result[1] * 2);
-    break;
+const permutations: string[] = (_ as any).permutations(data, 2);
+
+let maxMag = 0;
+permutations.forEach(perm => {
+  let sum = JSON.parse(perm[0]);
+  for (let i = 1; i < perm.length; i++) {
+    const line = perm[i];
+    const num: SnailfishNumber = JSON.parse(line);
+    sum = add(sum, num);
+    while (true) {
+      if (!reduce(sum)) {
+        break;
+      }
+    }
   }
-  // TODO: break
-}
+
+  let result = JSON.parse(JSON.stringify(sum));
+  while (true) {
+    magnify(result, '');
+    if (result.every((n: number) => typeof n === 'number')) {
+      maxMag = Math.max(maxMag, result[0] * 3 + result[1] * 2);
+      break;
+    }
+  }
+});
+
+console.log(maxMag);
 
 
 // explode(JSON.parse('[[[[[9,8],1],2],3],4]'), '');

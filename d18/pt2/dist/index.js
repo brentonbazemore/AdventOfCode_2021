@@ -18,8 +18,13 @@ var __importStar = (this && this.__importStar) || function (mod) {
     __setModuleDefault(result, mod);
     return result;
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 const fs = __importStar(require("fs"));
+require("lodash.permutations");
+const lodash_1 = __importDefault(require("lodash"));
 // Toggle this to switch input files
 const testInput = false;
 // #################################
@@ -222,22 +227,9 @@ const reduce = (fullNum) => {
         // console.log('did split');
         return true;
     }
-    console.log('no more reductions');
+    // console.log('no more reductions');
     return false;
 };
-let sum = JSON.parse(data[0]);
-for (let i = 1; i < data.length; i++) {
-    const line = data[i];
-    const num = JSON.parse(line);
-    sum = add(sum, num);
-    while (true) {
-        if (!reduce(sum)) {
-            break;
-        }
-    }
-    console.log('\n\n\n\n\n\n');
-}
-console.log('sum', JSON.stringify(sum));
 const magnify = (fullNum, path) => {
     const splitPath = path.length ? path.split(',').map(n => +n) : [];
     const leftPath = [...splitPath, 0];
@@ -260,15 +252,30 @@ const magnify = (fullNum, path) => {
     }
     return false;
 };
-let result = JSON.parse(JSON.stringify(sum));
-while (true) {
-    magnify(result, '');
-    if (result.every((n) => typeof n === 'number')) {
-        console.log(result[0] * 3 + result[1] * 2);
-        break;
+const permutations = lodash_1.default.permutations(data, 2);
+let maxMag = 0;
+permutations.forEach(perm => {
+    let sum = JSON.parse(perm[0]);
+    for (let i = 1; i < perm.length; i++) {
+        const line = perm[i];
+        const num = JSON.parse(line);
+        sum = add(sum, num);
+        while (true) {
+            if (!reduce(sum)) {
+                break;
+            }
+        }
     }
-    // TODO: break
-}
+    let result = JSON.parse(JSON.stringify(sum));
+    while (true) {
+        magnify(result, '');
+        if (result.every((n) => typeof n === 'number')) {
+            maxMag = Math.max(maxMag, result[0] * 3 + result[1] * 2);
+            break;
+        }
+    }
+});
+console.log(maxMag);
 // explode(JSON.parse('[[[[[9,8],1],2],3],4]'), '');
 // explode(JSON.parse('[7,[6,[5,[4,[3,2]]]]]'), '');
 // console.log(explode(JSON.parse('[[6,[5,[4,[3,2]]]],1]'), ''));
