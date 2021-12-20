@@ -32,8 +32,8 @@ const getEnhancedValue = (centerX: number, centerY: number, snapshot: Image): bo
   return enhancement[index] === '#';
 }
 
-const enhanceCount = 2;
-const buffer = 10;
+const enhanceCount = 50;
+const buffer = 20; // changing this will give different numbers. 20 works though
 
 let minX = -enhanceCount - buffer;
 let minY = -enhanceCount - buffer;
@@ -43,9 +43,6 @@ const enhance = () => {
   const snapshot = JSON.parse(JSON.stringify(image));
   for (let y = minY; y < maxY; y++) {
     for (let x = minX; x < maxX; x++) {
-      if (x === maxX - 1 && y === maxY - 1) {
-        console.log('end');
-      }
       image[genKey(x, y)] = getEnhancedValue(x, y, snapshot);
     }
   }
@@ -64,7 +61,7 @@ const printImage = () => {
   console.log(''.padStart(Math.abs(minX) + Math.abs(maxX) + 2, '‾'));
 }
 
-const debug = true;
+const debug = false;
 for (let i = 0; i < enhanceCount; i++) {
   enhance();
   debug && printImage();
