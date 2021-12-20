@@ -327,12 +327,24 @@ while (unknown.length && sanity > 0) {
         }
     });
 }
+const origins = {};
 known.forEach((scanner) => {
-    scanner.beacons.forEach(b => {
-        masterBeaconSet.add(`${scanner.location.x + b.x}_${scanner.location.y + b.y}_${scanner.location.z + b.z}`);
-    });
+    origins[scanner.id] = scanner;
 });
-console.log(masterBeaconSet.size);
+const combos = [];
+for (let i = 0; i < known.length; i++) {
+    for (let j = i; j < known.length; j++) {
+        combos.push([i, j]);
+    }
+}
+const findManhattan = (coords1, coords2) => {
+    return Math.abs(coords1.x - coords2.x) + Math.abs(coords1.y - coords2.y) + Math.abs(coords1.z - coords2.z);
+};
+let maxDistance = -Infinity;
+combos.forEach(([id1, id2]) => {
+    maxDistance = Math.max(maxDistance, findManhattan(origins[id1].location, origins[id2].location));
+});
+console.log(maxDistance);
 // const scannerQueue = [...scanners];
 // const masterScanner = scannerQueue.shift()!;
 // masterScanner.location = { x: 0, y: 0, z: 0 };
