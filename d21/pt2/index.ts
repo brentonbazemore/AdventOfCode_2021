@@ -10,9 +10,6 @@ const data: string[] = rawData.split('\n');
 let [, p1Position] = data[0].split(': ').map(n => +n);
 let [, p2Position] = data[1].split(': ').map(n => +n);
 
-let p1Score = 0;
-let p2Score = 0;
-
 const wrap = (num: number) => {
   while (num > 10) {
     num -= 10;
@@ -21,40 +18,41 @@ const wrap = (num: number) => {
   return num;
 }
 
-let rollCount = 0;
-let die = 100;
-const getDieValue = () => {
-  die++;
-  if (die > 100) {
-    die -= 100;
-  }
-  rollCount++;
+const toKey = (p1p: number, p1s: number, p2p: number, p2s: number) => `${p1p}_${p1s}_${p2p}_${p2s}`;
 
-  return die;
-};
-
-let isP1Turn = false;
-while (p1Score < 1000 && p2Score < 1000) {
-  isP1Turn = !isP1Turn;
-
-  let dist = 0;
-  for (let i = 0; i < 3; i++) {
-    dist += getDieValue();
+const knownOutcomes: { [state: string]: { p1: number, p2: number } } = {};
+const playRound = (p1Position: number, p1Score: number, p2Position: number, p2Score: number) => {
+  const key = toKey(p1Position, p1Score, p2Position, p2Score);
+  if (knownOutcomes[key]) {
+    return knownOutcomes[key];
   }
 
-  if (isP1Turn) {
-    p1Position = wrap(p1Position + dist);
-    p1Score += p1Position
-  } else {
-    p2Position = wrap(p2Position + dist);
-    p2Score += p2Position;
+  if (p1Score >= 21) {
+    return { p1: 1, p2: 0 };
   }
+
+  if (p2Score >= 21) {
+    return { p1: 0, p2: 1 };
+  }
+
+  let wins: { p1: number, p2: number } = { p1: 0, p2: 0 };
+  for (let i = 1; i <= 3; i++) {
+    for (let j = 1; j <= 3; j++) {
+      for (let k = 1; k <= 3; k++) {
+          const newP1Position = wrap(p1Position + i + j + k);
+          const newP1Score = p1Score + newP1Position;
+          // flip to alternate turns
+          const newCount = playRound(p2Position, p2Score, newP1Position, newP1Score);
+          wins.p1 += newCount.p2;
+          wins.p2 += newCount.p1;
+      }
+    }
+  }
+
+  knownOutcomes[key] = wins;
+
+  return wins;
 }
 
-console.log({ p1Score, p2Score, p1Position, p2Position, rollCount });
-
-if (p1Score > p2Score) {
-  console.log(rollCount * p2Score);
-} else {
-  console.log(rollCount * p1Score);
-}
+const out = playRound(p1Position, 0, p2Position, 0);
+console.log(out);
