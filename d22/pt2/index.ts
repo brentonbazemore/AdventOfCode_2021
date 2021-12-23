@@ -30,27 +30,89 @@ const instructions: Instruction[] = data.map((row => {
   };
 }));
 
-const toKey = (x: number, y: number, z: number) => `${x}_${y}_${z}`;
+class Cube {
+  state: 'on' | 'off';
+  start: {
+    x: number;
+    y: number;
+    z: number;
+  };
+  end: {
+    x: number;
+    y: number;
+    z: number;  
+  };
 
-const cubes: { [coords: string]: boolean } = {};
+  sizeX: number;
+  sizeY: number;
+  sizeZ: number;
 
-instructions.forEach((instruction) => {
-  if (instruction.x[0] < -50 || instruction.x[1] > 50) {
-    return;
+  constructor(x1: number, x2: number, y1: number, y2: number, z1: number, z2: number, state: 'on' | 'off' = 'on') {
+    this.start = {
+      x: x1,
+      y: y1,
+      z: z1,
+    };
+    this.end = {
+      x: x2,
+      y: y2,
+      z: z2,
+    };
+    this.sizeX = x2 - x1;
+    this.sizeY = y2 - y1;
+    this.sizeZ = z2 - z1;
+    this.state = state as 'on' | 'off';
   }
 
-  for (let x = instruction.x[0]; x <= instruction.x[1]; x++) {
-    for (let y = instruction.y[0]; y <= instruction.y[1]; y++) {
-      for (let z = instruction.z[0]; z <= instruction.z[1]; z++) {
-        cubes[toKey(x, y, z)] = instruction.toggle === 'on';
-      }
+  intersects(cube: Cube) {
+    if ( this.start.x <= cube.end.x
+      && this.end.x >= cube.start.x
+      && this.start.y <= cube.end.y
+      && this.end.y >= cube.start.y
+      && this.start.z <= cube.end.z
+      && this.end.z >= cube.start.z) {
+      return true;
     }
+
+    return false;
+  }
+};
+
+const calculateIntersectionCube = (cube1: Cube, cube2: Cube) => {
+  const xStart = Math.max(cube1.start.x, cube2.start.x);
+  const xEnd = Math.min(cube1.end.x, cube2.end.x);
+  const yStart = Math.max(cube1.start.y, cube2.start.y);
+  const yEnd = Math.min(cube1.end.y, cube2.end.y);
+  const zStart = Math.max(cube1.start.z, cube2.start.z);
+  const zEnd = Math.min(cube1.end.z, cube2.end.z);
+
+  return new Cube(xStart, xEnd, yStart, yEnd, zStart, zEnd, cube1.state === 'on' ? 'off' : 'on');
+}
+
+let litCubes: Cube[] = [];
+instructions.forEach((instruction) => {
+  const newCube = new Cube(instruction.x[0], instruction.x[1] + 1, instruction.y[0], instruction.y[1] + 1, instruction.z[0], instruction.z[1] + 1);
+  const counterCubes: Cube[] = [];
+  litCubes.forEach(cube => {
+    if (newCube.intersects(cube)) {
+      counterCubes.push(calculateIntersectionCube(cube, newCube));
+    }
+  });
+
+  litCubes.push(...counterCubes);
+
+  if (instruction.toggle === 'on') {
+    litCubes.push(newCube);
   }
 });
 
 let sum = 0;
-Object.values(cubes).forEach((cube) => {
-  sum += +cube;
-})
-
+litCubes.forEach((cube) => {
+  const volume = cube.sizeX * cube.sizeY * cube.sizeZ;
+  if (cube.state === 'on') {
+    sum += volume;
+  } else {
+    sum -= volume;
+  }
+});
 console.log(sum);
