@@ -1,25 +1,115 @@
 "use strict";
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
-    __setModuleDefault(result, mod);
-    return result;
+const p1 = (w, z) => {
+    let x = (z % 26) + 14;
+    x = +(x !== w);
+    z = z * ((25 * x) + 1);
+    z = z + ((w + 8) * x);
+    return z;
 };
-Object.defineProperty(exports, "__esModule", { value: true });
-const fs = __importStar(require("fs"));
-const rawData = fs.readFileSync('input.txt', 'utf8');
-const data = rawData.split('\n');
-console.log(data);
+const p2 = (w, z) => {
+    let x = (z % 26) + 13;
+    x = +(x !== w);
+    z = z * ((25 * x) + 1);
+    z = z + ((w + 8) * x);
+    return z;
+};
+const p3 = (w, z) => {
+    let x = (z % 26) + 13;
+    x = +(x !== w);
+    z = z * ((25 * x) + 1);
+    z = z + ((w + 3) * x);
+    return z;
+};
+const p4 = (w, z) => {
+    let x = (z % 26) + 12;
+    x = +(x !== w);
+    z = z * ((25 * x) + 1);
+    z = z + ((w + 10) * x);
+    return z;
+};
+const p5 = (w, z) => {
+    let x = (z % 26) + -12;
+    x = +(x !== w);
+    z = parseInt(`${z / 26}`);
+    z = z * ((25 * x) + 1);
+    z = z + ((w + 8) * x);
+    return z;
+};
+const p6 = (w, z) => {
+    let x = (z % 26) + 12;
+    x = +(x !== w);
+    z = z * ((25 * x) + 1);
+    z = z + ((w + 8) * x);
+    return z;
+};
+const p7 = (w, z) => {
+    let x = (z % 26) + -2;
+    x = +(x !== w);
+    z = parseInt(`${z / 26}`);
+    z = z * ((25 * x) + 1);
+    z = z + ((w + 8) * x);
+    return z;
+};
+const p8 = (w, z) => {
+    let x = (z % 26) + -11;
+    x = +(x !== w);
+    z = parseInt(`${z / 26}`);
+    z = z * ((25 * x) + 1);
+    z = z + ((w + 5) * x);
+    return z;
+};
+const p9 = (w, z) => {
+    let x = (z % 26) + 13;
+    x = +(x !== w);
+    z = z * ((25 * x) + 1);
+    z = z + ((w + 9) * x);
+    return z;
+};
+const p10 = (w, z) => {
+    let x = (z % 26) + 14;
+    x = +(x !== w);
+    z = z * ((25 * x) + 1);
+    z = z + ((w + 3) * x);
+    return z;
+};
+const p11 = (w, z) => {
+    let x = (z % 26) + 0;
+    x = +(x !== w);
+    z = parseInt(`${z / 26}`);
+    z = z * ((25 * x) + 1);
+    z = z + ((w + 4) * x);
+    return z;
+};
+const p12 = (w, z) => {
+    let x = (z % 26) + -12;
+    x = +(x !== w);
+    z = parseInt(`${z / 26}`);
+    z = z * ((25 * x) + 1);
+    z = z + ((w + 9) * x);
+    return z;
+};
+const p13 = (w, z) => {
+    let x = (z % 26) + -13;
+    x = +(x !== w);
+    z = parseInt(`${z / 26}`);
+    z = z * ((25 * x) + 1);
+    z = z + ((w + 2) * x);
+    return z;
+};
+const p14 = (w, z) => {
+    let x = (z % 26) + -6;
+    x = +(x !== w);
+    z = parseInt(`${z / 26}`);
+    z = z * ((25 * x) + 1);
+    z = z + ((w + 7) * x);
+    return z;
+};
+for (let w = 1; w < 10; w++) {
+    console.log(w);
+    for (let z = 0; z < 10000000; z++) {
+        if (p14(w, z) === 0) {
+            console.log(`Found w=${w}, z=${z}`);
+        }
+    }
+}
+//# sourceMappingURL=index.js.map
