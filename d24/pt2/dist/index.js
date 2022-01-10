@@ -3,6 +3,7 @@ const pn = (w, z, offset, divisor, offset2) => {
     const x = (z % 26) + offset !== w;
     z = parseInt(`${z / divisor}`);
     // this always makes z bigger, so to make z smaller, x must be false (which means w is === z + offset)
+    // only gets smaller when divisor is 26
     if (x) {
         z *= 26;
         z += w + offset2;
@@ -10,11 +11,11 @@ const pn = (w, z, offset, divisor, offset2) => {
     console.log(z);
     return z;
 };
-let n = [9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9];
+let n = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1];
 const findPair = (index1, index2, offset1, offset2) => {
-    for (let i = 9; i > 0; i--) {
+    for (let i = 1; i < 10; i++) {
         n[index1] = i;
-        for (let j = 9; j > 0; j--) {
+        for (let j = 1; j < 10; j++) {
             n[index2] = j;
             if (n[index1] + offset1 === n[index2] + offset2) {
                 return;

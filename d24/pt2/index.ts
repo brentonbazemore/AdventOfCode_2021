@@ -19,11 +19,11 @@ const pn = (
   return z;
 };
 
-let n: number[] = [9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9];
+let n: number[] = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1];
 const findPair = (index1: number, index2: number, offset1: number, offset2: number) => {
-  for (let i = 9; i > 0; i--) {
+  for (let i = 1; i < 10; i++) {
     n[index1] = i;
-    for (let j = 9; j > 0; j--) {
+    for (let j = 1; j < 10; j++) {
       n[index2] = j;
 
       if (n[index1] + offset1 === n[index2] + offset2) {
